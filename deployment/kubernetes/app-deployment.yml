@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-shortener
+  labels:
+    app: link-shortener
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: link-shortener
+  template:
+    metadata:
+      labels:
+        app: link-shortener
+    spec:
+      containers:
+        - name: default
+          image: solacens/2w5u6z2kt:latest
+          imagePullPolicy: Always
+          env:
+            - name: DOMAIN
+              value: test.com
+            # - name: HTTPS_ENABLED
+            #   value: 1
+            - name: REDIS_SENTINELS_CONNECTION_STRING
+              value: "[{\"host\":\"rfs-redisfailover\",\"port\":26379}]"
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+
