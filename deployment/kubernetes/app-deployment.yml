@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: default
-          image: solacens/2w5u6z2kt:latest
+          image: solacens/wnaoh9h5a:latest
           imagePullPolicy: Always
           env:
             - name: DOMAIN

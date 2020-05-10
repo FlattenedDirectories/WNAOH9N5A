@@ -6,7 +6,7 @@ BASEDIR=$(dirname "$0")
 cd $BASEDIR/..
 
 DOCKERACC="solacens"
-DOCKERREPO="2w5u6z2kt"
+DOCKERREPO="wnaoh9h5a"
 
 docker login --username $DOCKERACC
 docker build -t $DOCKERACC/$DOCKERREPO:latest .
