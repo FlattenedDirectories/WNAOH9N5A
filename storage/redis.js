@@ -36,11 +36,36 @@ const addRecord = async (url) => {
   return randomId
 }
 
+const setRateLimit = async (ip, callLimit, timePeriod) => {
+  var ret = await redis.psetex(`RATELIMIT|${ip}`, timePeriod, callLimit)
+  // ret == "OK" or replace
+  return true;
+}
+
+const getRateLimit = async (ip) => {
+  var ret = await redis.get(`RATELIMIT|${ip}`)
+  // Having record
+  if (ret != null) {
+    // Still have quota
+    if (ret > 0) {
+      await redis.set(`RATELIMIT|${ip}`, ret-1);
+      return true;
+    }
+    // Banned
+    else{
+      return false;
+    }
+  }
+  return true;
+}
+
 const getRecord = async (key) => {
   return await redis.get(key)
 }
 
 module.exports = {
   addRecord,
-  getRecord
+  getRecord,
+  setRateLimit,
+  getRateLimit
 }

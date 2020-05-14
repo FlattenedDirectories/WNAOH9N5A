@@ -3,7 +3,7 @@
 const randomIdGenerator = () => {
   var text = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < 8; i++)
+  for (var i = 0; i < 9; i++)
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
@@ -17,6 +17,14 @@ const addRecord = (url) => {
   }
   inMemoryDb[randomId] = url
   return randomId
+}
+
+const setRateLimit = (ip, callLimit, timePeriod) => {
+ //TODO
+}
+
+const getRateLimit = (ip) => {
+  return true;
 }
 
 const getRecord = (lnk) => {

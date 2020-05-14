@@ -27,13 +27,43 @@ app.post('/newurl', async (req, res, next) => {
   res.send(responseObj)
 })
 
+app.post('/rate_limit', async (req, res, next) => {
+  const requestObj = req.body
+  if (!requestObj.rules) {s
+    console.error("rules not found.");
+    next()
+  }
+  for (var i in requestObj.rules) {
+    let rule = requestObj.rules[i];
+    await redis.setRateLimit(rule.ip, rule.limit, rule.time)
+  }
+  res.send("Set")
+})
+
 app.get("/:lnk([a-zA-Z0-9]{9})", async (req, res, next) => {
   const { lnk } = req.params
-  const url = await redis.getRecord(lnk)
-  if (url) {
-    res.redirect(304, url)
-  } else {
-    next()
+  // Rate limit checkings
+  var pass = true;
+  
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  if (ip.substr(0, 7) == "::ffff:") {
+    ip = ip.substr(7)
+  }
+
+  console.log(`Current IP is ${ip}`);
+
+  pass = await redis.getRateLimit(ip)
+
+  if(pass) {
+    const url = await redis.getRecord(lnk)
+    if (url) {
+      res.redirect(304, url)
+    } else {
+      res.send("Short link not found")
+    }
+  }
+  else{
+    res.send("You have been rate limited.")
   }
 })
 
